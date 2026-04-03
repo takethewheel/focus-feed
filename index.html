@@ -1103,6 +1103,7 @@
         .item-with-cover {
     flex-direction: row;  /* Keep horizontal layout */
     gap: 12px;
+    align-items: center;
   }
 
   .item-cover {
@@ -2092,6 +2093,11 @@
   <!-- Main Content -->
   <main class="main">
     <!-- Controls Bar -->
+    <div class="filter-section">
+  <div class="section-header filter-header">
+    <h2>Filters</h2>
+    <span class="section-toggle" data-target="filter-controls">▼</span>
+  </div>
     <div class="controls">
       <button class="btn btn-primary" id="addBtn" onclick="toggleForm()">
         <span>+</span> Add New
@@ -2133,7 +2139,7 @@
         </label>
       </div>
     </div>
-
+</div>
     <!-- Category Filter Tabs -->
     <div class="category-filter">
       <span class="category-filter-label">Filter:</span>
