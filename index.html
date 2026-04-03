@@ -1114,6 +1114,30 @@
   .item-content {
     min-width: 0;  /* Prevents text overflow issues */
   }
+    .item-card {
+    padding: 10px;  /* Reduce from 14px */
+  }
+
+  .item-title-row h3 {
+    font-size: 13px;  /* Slightly smaller title */
+  }
+
+  .item-meta {
+    font-size: 10px;  /* Tighter metadata */
+  }
+
+  .item-actions {
+    margin-top: 6px;  /* Less spacing above buttons */
+  }
+  .section-header {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.section-header:active {
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-sm);
+}
     }
 
     /* Scrollbar */
@@ -4032,13 +4056,15 @@
     }
 
     // Mobile section collapse toggle
-    document.querySelectorAll('.section-toggle').forEach(function(toggle) {
-      toggle.addEventListener('click', function() {
-        var target = document.getElementById(this.dataset.target);
-        this.classList.toggle('collapsed');
-        target.classList.toggle('collapsed');
-      });
-    });
+    
+document.querySelectorAll('.section-header').forEach(function(header) {
+  header.addEventListener('click', function() {
+    var toggle = this.querySelector('.section-toggle');
+    var target = document.getElementById(toggle.dataset.target);
+    toggle.classList.toggle('collapsed');
+    target.classList.toggle('collapsed');
+  });
+});
 
     // Handle Enter key for new video category input
     document.addEventListener('keydown', function(e) {
