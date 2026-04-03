@@ -1001,6 +1001,33 @@
       animation: spin 0.8s linear infinite;
     }
 
+    /* Drag and Drop */
+    .item-card {
+      cursor: grab;
+    }
+
+    .item-card:active {
+      cursor: grabbing;
+    }
+
+    .item-card.dragging {
+      opacity: 0.4;
+      transform: scale(0.97);
+      border: 1px dashed var(--accent-blue);
+    }
+
+    .items-container.drag-over {
+      background: rgba(59, 130, 246, 0.05);
+      border: 2px dashed var(--accent-blue);
+      border-radius: var(--radius-md);
+      min-height: 80px;
+    }
+
+    .items-container.drag-over .empty-state {
+      border-color: var(--accent-blue);
+      color: var(--accent-blue);
+    }
+
     .file-input {
       display: none;
     }
@@ -2381,7 +2408,7 @@
           <h2>Want to Do</h2>
           <span class="count" id="wantCountBadge">0</span>
         </div>
-        <div class="items-container" id="wantItems"></div>
+        <div class="items-container" id="wantItems" data-status="want"></div>
       </section>
 
       <!-- In Progress Section -->
@@ -2390,7 +2417,7 @@
           <h2>In Progress</h2>
           <span class="count" id="progressCountBadge">0</span>
         </div>
-        <div class="items-container" id="progressItems"></div>
+        <div class="items-container" id="progressItems" data-status="progress"></div>
       </section>
 
       <!-- Done Section -->
@@ -2399,7 +2426,7 @@
           <h2>Done</h2>
           <span class="count" id="doneCountBadge">0</span>
         </div>
-        <div class="items-container" id="doneItems"></div>
+        <div class="items-container" id="doneItems" data-status="done"></div>
       </section>
     </div>
 
@@ -2716,7 +2743,14 @@
 
     function closeModalOnOverlay(event) {
       if (event.target === event.currentTarget) {
-        closeModal();
+        if (doneModalItem) {
+          // Done modal is open — revert the status change
+          cancelDoneModal(doneModalItem.id, doneModalPreviousStatus);
+          doneModalItem = null;
+          doneModalPreviousStatus = null;
+        } else {
+          closeModal();
+        }
       }
     }
 
@@ -2886,6 +2920,201 @@
       document.getElementById('ratingInput').value = currentRating || '';
       updateRatingScore();
       updateStarDisplay();
+    }
+
+    // ==================== "DONE" RATING MODAL ====================
+    let doneModalRating = null;
+    let doneModalHoverRating = null;
+    let doneModalItem = null;
+    let doneModalPreviousStatus = null;
+
+    // Show the rate/review modal when marking an item as Done
+    function showDoneModal(item, pendingNewStatus, oldStatus) {
+      const icon = CATEGORY_ICONS[item.category] || '📦';
+      const supportsRating = item.category !== 'activity';
+      doneModalRating = item.rating || null;
+      doneModalHoverRating = null;
+      doneModalItem = item;
+      doneModalPreviousStatus = oldStatus || 'progress';
+
+      const existingNotes = item.notes || '';
+      const existingReview = item.review || '';
+
+      let bodyHtml = `
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px; padding: 12px; background: var(--bg-tertiary); border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
+          <span style="font-size: 24px;">${icon}</span>
+          <div>
+            <div style="font-size: 15px; font-weight: 600; color: var(--text-primary);">${escapeHtml(item.title)}</div>
+            <div style="font-size: 12px; color: var(--text-tertiary); text-transform: capitalize;">${item.category}${item.author ? ' · by ' + escapeHtml(item.author) : ''}${item.artist ? ' · ' + escapeHtml(item.artist) : ''}${item.platform ? ' · ' + escapeHtml(item.platform) : ''}${item.director ? ' · Dir. ' + escapeHtml(item.director) : ''}</div>
+          </div>
+        </div>
+      `;
+
+      if (supportsRating) {
+        bodyHtml += `
+          <div class="form-group" style="margin-bottom: 16px;">
+            <label style="font-size: 12px; font-weight: 500; color: var(--text-secondary); margin-bottom: 8px; display: block;">Rating</label>
+            <div class="star-input-container">
+              <div class="star-rating" id="doneModalStars"></div>
+              <div class="rating-value">
+                <span class="score" id="doneModalScore">${doneModalRating !== null ? doneModalRating : '-'}</span><span>/10</span>
+              </div>
+              <button type="button" class="btn btn-xs btn-ghost" onclick="clearDoneModalRating()" style="padding: 4px 8px; font-size: 10px;">Clear</button>
+            </div>
+          </div>
+        `;
+      }
+
+      bodyHtml += `
+        <div class="form-group" style="margin-bottom: 16px;">
+          <label style="font-size: 12px; font-weight: 500; color: var(--text-secondary); margin-bottom: 8px; display: block;">Review</label>
+          <textarea id="doneModalReview" placeholder="What did you think?" rows="3" style="width: 100%; padding: 10px 14px; font-size: 14px; background: var(--bg-tertiary); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); color: var(--text-primary); outline: none; font-family: inherit; resize: vertical; transition: all var(--transition-fast);">${escapeHtml(existingReview)}</textarea>
+        </div>
+        <div class="form-group">
+          <label style="font-size: 12px; font-weight: 500; color: var(--text-secondary); margin-bottom: 8px; display: block;">Notes</label>
+          <textarea id="doneModalNotes" placeholder="Any additional notes..." rows="2" style="width: 100%; padding: 10px 14px; font-size: 14px; background: var(--bg-tertiary); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); color: var(--text-primary); outline: none; font-family: inherit; resize: vertical; transition: all var(--transition-fast);">${escapeHtml(existingNotes)}</textarea>
+        </div>
+      `;
+
+      const footerHtml = `
+        <button class="btn btn-ghost" onclick="skipDoneModal()">Skip</button>
+        <button class="btn btn-success" id="doneModalSaveBtn">✓ Mark as Done</button>
+      `;
+
+      openModal('Mark as Done', bodyHtml, footerHtml);
+
+      // Build interactive stars inside the modal
+      if (supportsRating) {
+        initDoneModalStars();
+      }
+
+      // Wire up save button
+      document.getElementById('doneModalSaveBtn').onclick = () => {
+        completeDoneModal(item, pendingNewStatus);
+      };
+    }
+
+    // Build 10 interactive stars for the done modal
+    function initDoneModalStars() {
+      const container = document.getElementById('doneModalStars');
+      if (!container) return;
+      container.innerHTML = '';
+
+      for (let i = 1; i <= 10; i++) {
+        const star = document.createElement('span');
+        star.className = 'star';
+        star.dataset.value = i;
+        star.innerHTML = '☆';
+        star.style.fontSize = '22px';
+        star.style.cursor = 'pointer';
+
+        star.addEventListener('mousemove', (e) => {
+          const rect = star.getBoundingClientRect();
+          doneModalHoverRating = e.clientX < rect.left + rect.width / 2 ? i - 0.5 : i;
+          updateDoneModalStars(doneModalHoverRating);
+        });
+        star.addEventListener('mouseenter', () => {
+          doneModalHoverRating = i;
+          updateDoneModalStars(doneModalHoverRating);
+        });
+        star.addEventListener('mouseleave', () => {
+          doneModalHoverRating = null;
+          updateDoneModalStars();
+        });
+        star.addEventListener('click', (e) => {
+          const rect = star.getBoundingClientRect();
+          const clicked = e.clientX < rect.left + rect.width / 2 ? i - 0.5 : i;
+          doneModalRating = doneModalRating === clicked ? null : clicked;
+          updateDoneModalStars();
+          const scoreEl = document.getElementById('doneModalScore');
+          if (scoreEl) scoreEl.textContent = doneModalRating !== null ? doneModalRating : '-';
+        });
+
+        container.appendChild(star);
+      }
+
+      updateDoneModalStars();
+    }
+
+    // Update star visuals in the done modal
+    function updateDoneModalStars(rating) {
+      const display = rating !== undefined ? rating : doneModalRating;
+      const stars = document.querySelectorAll('#doneModalStars .star');
+      stars.forEach((star, idx) => {
+        const val = idx + 1;
+        star.classList.remove('filled', 'half');
+        if (display !== null) {
+          if (val <= display) {
+            star.classList.add('filled');
+            star.innerHTML = '★';
+          } else if (val - 0.5 <= display && val > display) {
+            star.classList.add('half');
+            star.innerHTML = '☆';
+          } else {
+            star.innerHTML = '☆';
+          }
+        } else {
+          star.innerHTML = '☆';
+        }
+      });
+    }
+
+    // Clear rating in done modal
+    function clearDoneModalRating() {
+      doneModalRating = null;
+      updateDoneModalStars();
+      const scoreEl = document.getElementById('doneModalScore');
+      if (scoreEl) scoreEl.textContent = '-';
+    }
+
+    // User clicked "Skip" — move to done without rating/review
+    function skipDoneModal() {
+      closeModal();
+      doneModalItem = null;
+      doneModalPreviousStatus = null;
+      saveData();
+      renderItems();
+      showToast('Moved to "Done"', 'success', 2000);
+    }
+
+    // User pressed Escape on done modal — revert the status change
+    function cancelDoneModal(itemId, previousStatus) {
+      const item = data.items.find(i => i.id === itemId);
+      if (item) {
+        item.status = previousStatus;
+        if (previousStatus !== 'progress') {
+          item.dateStarted = null;
+          item.dateEnded = null;
+          item.dateCompleted = null;
+        }
+      }
+      closeModal();
+      saveData();
+      renderItems();
+    }
+
+    // User clicked "Mark as Done" — save rating/review/notes and finalize
+    function completeDoneModal(item, pendingNewStatus) {
+      const supportsRating = item.category !== 'activity';
+      const reviewEl = document.getElementById('doneModalReview');
+      const notesEl = document.getElementById('doneModalNotes');
+
+      // Find the actual item in data (it was already status-updated)
+      const dataItem = data.items.find(i => i.id === item.id);
+      if (dataItem) {
+        if (supportsRating) {
+          dataItem.rating = doneModalRating;
+        }
+        dataItem.review = reviewEl ? reviewEl.value.trim() : null;
+        dataItem.notes = notesEl ? notesEl.value.trim() : null;
+      }
+
+      doneModalItem = null;
+      doneModalPreviousStatus = null;
+      closeModal();
+      saveData();
+      renderItems();
+      showToast('Marked as Done! 🎉', 'success', 2000);
     }
 
     // Generate star rating HTML for display (non-interactive)
@@ -4778,20 +5007,22 @@
           if (!item.dateStarted) item.dateStarted = new Date().toISOString().split('T')[0];
           item.dateEnded = null;
           item.dateCompleted = null;
+          saveData();
+          renderItems();
+          showToast('Moved to "In Progress"', 'success', 2000);
         } else if (newStatus === 'done') {
           if (!item.dateStarted) item.dateStarted = new Date().toISOString().split('T')[0];
           item.dateCompleted = item.dateEnded || item.dateStarted;
+          // Show the rate/review modal before finalizing
+          showDoneModal(item, newStatus, oldStatus);
         } else {
           item.dateStarted = null;
           item.dateEnded = null;
           item.dateCompleted = null;
+          saveData();
+          renderItems();
+          showToast('Moved to "Want to Do"', 'success', 2000);
         }
-        saveData();
-        renderItems();
-        
-        // Show toast
-        const statusText = { want: 'Want to Do', progress: 'In Progress', done: 'Done' };
-        showToast(`Moved to "${statusText[newStatus]}"`, 'success', 2000);
       }
     }
 
@@ -5112,9 +5343,9 @@
       `;
       
       if (hasCover) {
-        return `<div class="item-card"><div class="item-with-cover">${coverHtml}${contentHtml}</div></div>`;
+        return `<div class="item-card" draggable="true" data-item-id="${item.id}"><div class="item-with-cover">${coverHtml}${contentHtml}</div></div>`;
       }
-      return `<div class="item-card">${contentHtml}</div>`;
+      return `<div class="item-card" draggable="true" data-item-id="${item.id}">${contentHtml}</div>`;
     }
 
     // Escape HTML
@@ -5167,6 +5398,82 @@
       if (currentView === 'table') {
         renderTableView();
       }
+
+      // Re-attach drag and drop listeners after re-render
+      initDragAndDrop();
+    }
+
+    // ==================== DRAG AND DROP ====================
+    let draggedItemId = null;
+
+    function initDragAndDrop() {
+      // Card drag events
+      document.querySelectorAll('.item-card[draggable]').forEach(card => {
+        card.addEventListener('dragstart', handleDragStart);
+        card.addEventListener('dragend', handleDragEnd);
+      });
+
+      // Column drop zone events
+      document.querySelectorAll('.items-container[data-status]').forEach(zone => {
+        zone.addEventListener('dragover', handleDragOver);
+        zone.addEventListener('dragenter', handleDragEnter);
+        zone.addEventListener('dragleave', handleDragLeave);
+        zone.addEventListener('drop', handleDrop);
+      });
+    }
+
+    function handleDragStart(e) {
+      draggedItemId = e.currentTarget.dataset.itemId;
+      e.currentTarget.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', draggedItemId);
+    }
+
+    function handleDragEnd(e) {
+      e.currentTarget.classList.remove('dragging');
+      draggedItemId = null;
+      // Clean up any remaining drag-over highlights
+      document.querySelectorAll('.items-container.drag-over').forEach(z => z.classList.remove('drag-over'));
+    }
+
+    function handleDragOver(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+    }
+
+    function handleDragEnter(e) {
+      e.preventDefault();
+      // Only highlight the container itself, not child elements
+      const container = e.currentTarget;
+      if (e.target === container || container.contains(e.target)) {
+        container.classList.add('drag-over');
+      }
+    }
+
+    function handleDragLeave(e) {
+      const container = e.currentTarget;
+      // Only remove highlight if truly leaving the container
+      if (!container.contains(e.relatedTarget)) {
+        container.classList.remove('drag-over');
+      }
+    }
+
+    function handleDrop(e) {
+      e.preventDefault();
+      const container = e.currentTarget;
+      container.classList.remove('drag-over');
+
+      const itemId = e.dataTransfer.getData('text/plain');
+      const newStatus = container.dataset.status;
+
+      if (!itemId || !newStatus) return;
+
+      // Find the item and check if it's actually moving to a different column
+      const item = data.items.find(i => i.id === itemId);
+      if (!item || item.status === newStatus) return;
+
+      // Use moveItem which will trigger the done modal if needed
+      moveItem(itemId, newStatus);
     }
 
     // Export
@@ -5239,8 +5546,14 @@
       // Close modal on Escape
       if (e.key === 'Escape') {
         const formModal = document.getElementById('formModal');
+        const modalOverlay = document.getElementById('modalOverlay');
         if (formModal.classList.contains('active')) {
           cancelForm();
+        } else if (modalOverlay.classList.contains('active') && doneModalItem) {
+          // Done modal is open — revert the status change
+          cancelDoneModal(doneModalItem.id, doneModalPreviousStatus);
+          doneModalItem = null;
+          doneModalPreviousStatus = null;
         } else {
           closeModal();
         }
@@ -5807,13 +6120,15 @@
       // If current position is at or past the last episode, mark as done
       if (currentSeason > lastEp.season || (currentSeason === lastEp.season && currentEpisode >= lastEp.episode)) {
         if (item.status !== 'done') {
+          const oldStatus = item.status;
           item.status = 'done';
           item.dateCompleted = new Date().toISOString().split('T')[0];
           item.dateEnded = item.dateCompleted;
           if (!item.dateStarted) {
             item.dateStarted = new Date().toISOString().split('T')[0];
           }
-          showToast(`"${item.title}" marked as done!`, 'success', 3000);
+          // Show the rate/review modal for the completed show
+          showDoneModal(item, 'done', oldStatus);
         }
       }
     }
