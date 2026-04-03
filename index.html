@@ -109,6 +109,67 @@
       padding: 24px;
     }
 
+    /* Category Filters */
+
+/* Collapsible Filter Section */
+.filter-section {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+
+.filter-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  user-select: none;
+}
+
+.filter-header:hover {
+  background: var(--bg-tertiary);
+}
+
+.filter-header-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.filter-toggle {
+  font-size: 10px;
+  color: var(--text-tertiary);
+  transition: transform var(--transition-fast);
+}
+
+.filter-toggle.collapsed {
+  transform: rotate(-90deg);
+}
+
+.filter-content {
+  max-height: 500px;
+  transition: max-height 0.3s ease, padding 0.3s ease;
+  overflow: hidden;
+}
+
+.filter-content.collapsed {
+  max-height: 0;
+  padding: 0;
+}
+
+/* Update the category-filter when inside collapsible */
+.filter-content .category-filter {
+  border: none;
+  border-radius: 0;
+  border-top: 1px solid var(--border-subtle);
+  margin-bottom: 0;
+}
     /* Controls Bar */
     .controls {
       background: var(--bg-secondary);
@@ -358,7 +419,9 @@
       margin-left: 6px;
       font-weight: 600;
     }
-
+.filter-header .section-toggle {
+  display: none;
+}
     /* Form */
     .form-container {
       background: var(--bg-secondary);
@@ -1139,6 +1202,7 @@
   background: var(--bg-tertiary);
   border-radius: var(--radius-sm);
 }
+
     }
 
     /* Scrollbar */
@@ -2078,8 +2142,7 @@
     <div class="header-inner">
       <img src="https://img.icons8.com/?size=160&id=jaGYkPVVwXqk&format=png" alt="Media Tracker Logo" class="header-logo">
       <div class="header-text">
-        <h1>Media Tracker</h1>
-        <p>Track your movies, shows, books, videos, articles, and more</p>
+        <h1>Focus Feed</h1>
       </div>
       <div class="sync-status">
         <span class="sync-dot-tooltip" id="syncDot" data-tip="Checking...">
@@ -2093,11 +2156,8 @@
   <!-- Main Content -->
   <main class="main">
     <!-- Controls Bar -->
-    <div class="filter-section">
-  <div class="section-header filter-header">
-    <h2>Filters</h2>
-    <span class="section-toggle" data-target="filter-controls">▼</span>
-  </div>
+    
+ 
     <div class="controls">
       <button class="btn btn-primary" id="addBtn" onclick="toggleForm()">
         <span>+</span> Add New
@@ -2141,8 +2201,13 @@
     </div>
 </div>
     <!-- Category Filter Tabs -->
-    <div class="category-filter">
-      <span class="category-filter-label">Filter:</span>
+    <div class="filter-section">
+  <div class="filter-header" onclick="toggleFilterSection()">
+    <span class="filter-header-label">FILTER BY TYPE</span>
+    <span class="filter-toggle collapsed" id="filterToggle">▼</span>
+  </div>
+  <div class="filter-content collapsed" id="filterContent">
+    <div class="category-filter" id="categoryFilter">
       <button class="category-tab active" data-category="" onclick="setCategoryFilter('')">
         All <span class="count" id="countAll">0</span>
       </button>
@@ -2176,7 +2241,9 @@
       <button class="category-tab" data-category="other" onclick="setCategoryFilter('other')">
         Other <span class="count" id="countOther">0</span>
       </button>
-    </div>
+     </div>
+  </div>
+</div>
 
     <!-- Add/Edit Form Modal -->
     <div class="modal-overlay" id="formModal" onclick="closeFormModalOnOverlay(event)">
@@ -6256,6 +6323,31 @@ document.querySelectorAll('.section-header').forEach(function(header) {
     initFirebase();
     renderItems();
     autoSyncOnLoad(); // Non-blocking cloud sync in background
+  
+
+function toggleFilterSection() {
+  const content = document.getElementById('filterContent');
+  const toggle = document.getElementById('filterToggle');
+
+  content.classList.toggle('collapsed');
+  toggle.classList.toggle('collapsed');
+
+  // Optional: Save preference to localStorage
+  const isCollapsed = content.classList.contains('collapsed');
+  localStorage.setItem('filterCollapsed', isCollapsed);
+}
+
+// Optional: Restore state on page load
+document.addEventListener('DOMContentLoaded', () => {
+  const savedState = localStorage.getItem('filterCollapsed');
+  // Default to collapsed (true) if no saved state
+  if (savedState === 'false') {
+    const content = document.getElementById('filterContent');
+    const toggle = document.getElementById('filterToggle');
+    content.classList.remove('collapsed');
+    toggle.classList.remove('collapsed');
+  }
+});
   </script>
 </body>
 </html>
