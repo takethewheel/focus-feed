@@ -1100,6 +1100,20 @@
       .section-toggle {
         display: inline-block;
       }
+        .item-with-cover {
+    flex-direction: row;  /* Keep horizontal layout */
+    gap: 12px;
+  }
+
+  .item-cover {
+    width: 50px;   /* Compact square thumbnail */
+    height: 50px;
+    flex-shrink: 0;
+  }
+
+  .item-content {
+    min-width: 0;  /* Prevents text overflow issues */
+  }
     }
 
     /* Scrollbar */
