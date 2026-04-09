@@ -84,6 +84,110 @@
     .header-text {
       display: flex;
       flex-direction: column;
+      flex: 1;
+    }
+    
+    .header-settings-btn {
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      font-size: 18px;
+      color: var(--text-secondary);
+      transition: all var(--transition-fast);
+      flex-shrink: 0;
+    }
+    
+    .header-settings-btn:hover {
+      background: var(--bg-elevated);
+      color: var(--text-primary);
+      border-color: var(--border-default);
+      transform: rotate(30deg);
+    }
+    
+    /* Settings Modal */
+    .settings-modal .setting-group {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    
+    .settings-modal .setting-group:last-child {
+      border-bottom: none;
+    }
+    
+    .setting-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    
+    .setting-label {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+    
+    .setting-desc {
+      font-size: 12px;
+      color: var(--text-tertiary);
+    }
+    
+    /* Toggle Switch */
+    .toggle-switch {
+      position: relative;
+      width: 44px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+    
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--border-default);
+      border-radius: 24px;
+      transition: background var(--transition-fast);
+    }
+    
+    .toggle-slider::before {
+      content: '';
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      left: 3px;
+      bottom: 3px;
+      background: white;
+      border-radius: 50%;
+      transition: transform var(--transition-fast);
+    }
+    
+    .toggle-switch input:checked + .toggle-slider {
+      background: var(--accent-blue);
+    }
+    
+    .toggle-switch input:checked + .toggle-slider::before {
+      transform: translateX(20px);
+    }
+    
+    .toggle-switch input:focus + .toggle-slider {
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
     }
     
     .header h1 {
@@ -1504,6 +1608,154 @@
       margin-top: 2px;
     }
 
+    /* Inline Podcast Episode Dropdown */
+    .podcast-episode-wrapper {
+      position: relative;
+    }
+    
+    .podcast-episode-dropdown {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 200%;
+      max-width: calc(100vw - 48px);
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-md);
+      max-height: 420px;
+      z-index: 100;
+      margin-top: 4px;
+      box-shadow: var(--shadow-lg);
+      flex-direction: column;
+    }
+    
+    .podcast-episode-dropdown.visible {
+      display: flex;
+    }
+    
+    /* Bulk controls bar (Select All + actions) */
+    .ep-bulk-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--bg-tertiary);
+      border-radius: var(--radius-md) var(--radius-md) 0 0;
+      flex-shrink: 0;
+      gap: 8px;
+    }
+    
+    .ep-select-all label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    
+    .ep-select-all input[type="checkbox"] {
+      width: 15px;
+      height: 15px;
+      cursor: pointer;
+      accent-color: var(--accent-blue);
+    }
+    
+    .ep-top-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+    
+    .ep-count {
+      font-size: 11px;
+      color: var(--accent-blue);
+      font-weight: 600;
+    }
+    
+    /* Scrollable episode list */
+    .ep-list-scroll {
+      overflow-y: auto;
+      max-height: 340px;
+      flex: 1;
+    }
+    
+    .podcast-episode-dropdown .ep-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-size: 13px;
+      color: var(--text-primary);
+      border-bottom: 1px solid var(--border-subtle);
+      transition: background var(--transition-fast);
+    }
+    
+    .podcast-episode-dropdown .ep-item:last-child {
+      border-bottom: none;
+    }
+    
+    .podcast-episode-dropdown .ep-item:hover {
+      background: var(--bg-tertiary);
+    }
+    
+    .podcast-episode-dropdown .ep-item.ep-checked {
+      background: rgba(59, 130, 246, 0.08);
+    }
+    
+    .podcast-episode-dropdown .ep-item input[type="checkbox"] {
+      width: 15px;
+      height: 15px;
+      flex-shrink: 0;
+      cursor: pointer;
+      accent-color: var(--accent-blue);
+    }
+    
+    .podcast-episode-dropdown .ep-info {
+      flex: 1;
+      min-width: 0;
+    }
+    
+    .podcast-episode-dropdown .ep-item .ep-title {
+      font-weight: 500;
+      margin-bottom: 1px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .podcast-episode-dropdown .ep-item .ep-meta {
+      font-size: 11px;
+      color: var(--text-tertiary);
+    }
+    
+    .ep-status-select {
+      padding: 5px 8px;
+      font-size: 12px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      outline: none;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    
+    .ep-status-select:focus {
+      border-color: var(--accent-blue);
+    }
+    
+    .ep-add-btn {
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+
     /* Search Mode Toggle */
     .search-mode-toggle {
       display: flex;
@@ -2144,6 +2396,7 @@
       <div class="header-text">
         <h1>Focus Feed</h1>
       </div>
+      <button class="header-settings-btn" onclick="openSettingsModal()" title="Display Settings">⚙️</button>
       <div class="sync-status">
         <span class="sync-dot-tooltip" id="syncDot" data-tip="Checking...">
           <span class="sync-dot offline"></span>
@@ -2427,7 +2680,14 @@
         <!-- Episode Field - only for podcasts -->
         <div class="form-group" id="episodeGroup">
           <label>Episode (optional)</label>
-          <input type="text" id="episodeInput" placeholder="e.g., Ep. 42 - The Interview">
+          <div class="podcast-episode-wrapper">
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <input type="text" id="episodeInput" placeholder="e.g., Ep. 42 - The Interview" style="flex: 1;">
+              <input type="hidden" id="episodeReleaseDate" value="">
+              <button type="button" class="btn btn-xs btn-outline-purple" id="browseEpisodesBtn" onclick="browsePodcastEpisodes()" disabled title="Browse episodes for selected podcast">📋 Browse</button>
+            </div>
+            <div id="podcastEpisodeDropdown" class="podcast-episode-dropdown"></div>
+          </div>
         </div>
         
         <!-- Show Episode Tracking - only for shows -->
@@ -3317,7 +3577,7 @@
         <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
         <button class="btn btn-outline-blue" id="continueBtn" disabled style="display: none;">Continue</button>
         <button class="btn btn-primary" id="selectPodcastBtn" disabled>See Episode List</button>
-        <button class="btn btn-success" id="addEpisodeBtn" disabled style="display: none;">Add Episode</button>
+        <button class="btn btn-primary" id="addEpisodeBtn" disabled style="display: none;">Select Episode</button>
       `;
       
       openModal('Search Podcast Database', bodyHtml, footerHtml);
@@ -3352,10 +3612,10 @@
         }
       };
       
-      // Add Episode button - directly adds the episode to the tracker
+      // Add Episode button - populates the form with selected episode details
       document.getElementById('addEpisodeBtn').onclick = () => {
         if (selectedEpisodeIndex >= 0 && episodeSearchResults[selectedEpisodeIndex]) {
-          addEpisodeDirectly(episodeSearchResults[selectedEpisodeIndex]);
+          selectEpisodeFromSearch(episodeSearchResults[selectedEpisodeIndex]);
         }
       };
       
@@ -3516,13 +3776,23 @@
       
       // Fill in the form with episode details
       document.getElementById('podcastSelect').value = parentPodcast.id;
-      document.getElementById('titleInput').value = parentPodcast.name;
+      document.getElementById('titleInput').value = episode.title;
       document.getElementById('coverUrlInput').value = parentPodcast.coverUrl || '';
       updateCoverPreview();
       document.getElementById('episodeInput').value = episode.title;
+      document.getElementById('episodeReleaseDate').value = episode.releaseDate || '';
+      
+      // Ensure podcast category is selected and fields are visible
+      setSelectedCategory('podcast');
+      document.getElementById('podcastGroup').classList.add('visible');
+      document.getElementById('episodeGroup').classList.add('visible');
+      
+      // Enable the browse episodes button
+      const browseBtn = document.getElementById('browseEpisodesBtn');
+      if (browseBtn) browseBtn.disabled = false;
       
       closeModal();
-      showToast(`Added episode "${episode.title}" from "${episode.podcastName}"`, 'success');
+      showToast(`Episode selected: "${episode.title}" — review the form and click Add`, 'info');
     }
 
     // Directly add episode to tracker without filling the form
@@ -3544,7 +3814,7 @@
       // Create the item directly
       const newItem = {
         id: generateId(),
-        title: episode.podcastName,
+        title: episode.title,
         category: 'podcast',
         status: 'done',
         notes: '',
@@ -3971,6 +4241,11 @@
     function onPodcastSelect() {
       const select = document.getElementById('podcastSelect');
       const value = select.value;
+      const browseBtn = document.getElementById('browseEpisodesBtn');
+      
+      // Close any open episode dropdown
+      const dropdown = document.getElementById('podcastEpisodeDropdown');
+      if (dropdown) dropdown.classList.remove('visible');
       
       if (value === '_new_') {
         // Clear selection and prepare for new podcast
@@ -3980,6 +4255,7 @@
         updateCoverPreview();
         document.getElementById('episodeInput').value = '';
         document.getElementById('titleInput').focus();
+        if (browseBtn) browseBtn.disabled = true;
       } else if (value) {
         // Selected existing podcast
         const podcast = data.podcasts.find(p => p.id === value);
@@ -3989,13 +4265,215 @@
           document.getElementById('coverUrlInput').value = podcast.coverUrl || '';
           updateCoverPreview();
           document.getElementById('episodeInput').focus();
+          if (browseBtn) browseBtn.disabled = false;
         }
       } else {
         selectedPodcast = null;
         document.getElementById('titleInput').value = '';
         document.getElementById('coverUrlInput').value = '';
         updateCoverPreview();
+        if (browseBtn) browseBtn.disabled = true;
       }
+    }
+
+    // Browse episodes for the currently selected podcast (inline dropdown with multi-select)
+    let _podcastEpisodesList = [];
+    let _selectedEpisodeIndexes = new Set();
+    
+    async function browsePodcastEpisodes() {
+      const dropdown = document.getElementById('podcastEpisodeDropdown');
+      
+      if (!selectedPodcast) {
+        showToast('Please select a podcast first.', 'warning');
+        return;
+      }
+      
+      // If dropdown is already visible, toggle it off
+      if (dropdown.classList.contains('visible')) {
+        dropdown.classList.remove('visible');
+        return;
+      }
+      
+      // Reset selection
+      _selectedEpisodeIndexes = new Set();
+      
+      // Show loading state
+      dropdown.innerHTML = `
+        <div style="padding: 16px; text-align: center;">
+          <div class="spinner" style="margin: 0 auto 8px;"></div>
+          <span style="font-size: 12px; color: var(--text-tertiary);">Loading episodes from "${escapeHtml(selectedPodcast.name)}"...</span>
+        </div>
+      `;
+      dropdown.classList.add('visible');
+      
+      try {
+        const url = `https://itunes.apple.com/search?term=${encodeURIComponent(selectedPodcast.name)}&media=podcast&entity=podcastEpisode&limit=50`;
+        const response = await fetchWithProxy(url);
+        const data = await response.json();
+        
+        if (data.results && data.results.length > 0) {
+          // Filter to only episodes from this podcast
+          let episodes = data.results
+            .filter(r => r.collectionName && r.collectionName.toLowerCase() === selectedPodcast.name.toLowerCase())
+            .map(r => ({
+              title: r.trackName,
+              podcastName: r.collectionName,
+              releaseDate: r.releaseDate ? new Date(r.releaseDate).toLocaleDateString() : null,
+              releaseDateObj: r.releaseDate ? new Date(r.releaseDate) : null,
+              duration: r.trackTimeMillis ? formatDuration(r.trackTimeMillis) : null
+            }));
+          
+          if (episodes.length === 0) {
+            episodes = data.results.map(r => ({
+              title: r.trackName,
+              podcastName: r.collectionName,
+              releaseDate: r.releaseDate ? new Date(r.releaseDate).toLocaleDateString() : null,
+              releaseDateObj: r.releaseDate ? new Date(r.releaseDate) : null,
+              duration: r.trackTimeMillis ? formatDuration(r.trackTimeMillis) : null
+            }));
+          }
+          
+          // Sort by release date descending
+          episodes.sort((a, b) => {
+            if (!a.releaseDateObj) return 1;
+            if (!b.releaseDateObj) return -1;
+            return b.releaseDateObj - a.releaseDateObj;
+          });
+          
+          if (episodes.length === 0) {
+            dropdown.innerHTML = `<div style="padding: 16px; text-align: center; font-size: 13px; color: var(--text-tertiary);">No episodes found</div>`;
+            return;
+          }
+          
+          _podcastEpisodesList = episodes;
+          renderEpisodeDropdownContent();
+          
+        } else {
+          dropdown.innerHTML = `<div style="padding: 16px; text-align: center; font-size: 13px; color: var(--text-tertiary);">No episodes found</div>`;
+        }
+      } catch (error) {
+        console.error('Error fetching podcast episodes:', error);
+        dropdown.innerHTML = `<div style="padding: 16px; text-align: center; font-size: 13px; color: var(--text-tertiary);">Failed to load episodes. Try again.</div>`;
+      }
+    }
+    
+    function renderEpisodeDropdownContent() {
+      const dropdown = document.getElementById('podcastEpisodeDropdown');
+      const allSelected = _selectedEpisodeIndexes.size === _podcastEpisodesList.length;
+      const count = _selectedEpisodeIndexes.size;
+      const canAdd = count > 0;
+      
+      let html = `
+        <div class="ep-bulk-controls">
+          <div class="ep-select-all">
+            <label>
+              <input type="checkbox" ${allSelected ? 'checked' : ''} onchange="toggleAllEpisodes(this.checked)">
+              <span>Select All</span>
+            </label>
+          </div>
+          <div class="ep-top-actions">
+            <select id="epBulkStatus" class="ep-status-select">
+              <option value="done">Done</option>
+              <option value="progress">In Progress</option>
+              <option value="want">Want to Do</option>
+            </select>
+            <button class="btn btn-xs btn-primary ep-add-btn" ${canAdd ? '' : 'disabled'} onclick="addSelectedEpisodes()">
+              Add${canAdd ? ' ' + count : ''}
+            </button>
+          </div>
+        </div>
+        <div class="ep-list-scroll">
+      `;
+      
+      html += _podcastEpisodesList.map((ep, i) => {
+        const checked = _selectedEpisodeIndexes.has(i);
+        return `
+          <div class="ep-item ${checked ? 'ep-checked' : ''}" onclick="toggleEpisodeSelect(${i})">
+            <input type="checkbox" ${checked ? 'checked' : ''} onclick="event.stopPropagation(); toggleEpisodeSelect(${i})">
+            <div class="ep-info">
+              <div class="ep-title">${escapeHtml(ep.title)}</div>
+              <div class="ep-meta">${escapeHtml(ep.releaseDate || '')}${ep.duration ? ' · ' + escapeHtml(ep.duration) : ''}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+      
+      html += `</div>`;
+      
+      dropdown.innerHTML = html;
+    }
+    
+    function toggleEpisodeSelect(index) {
+      if (_selectedEpisodeIndexes.has(index)) {
+        _selectedEpisodeIndexes.delete(index);
+      } else {
+        _selectedEpisodeIndexes.add(index);
+      }
+      renderEpisodeDropdownContent();
+    }
+    
+    function toggleAllEpisodes(checked) {
+      _selectedEpisodeIndexes = checked ? new Set(_podcastEpisodesList.map((_, i) => i)) : new Set();
+      renderEpisodeDropdownContent();
+    }
+    
+    function addSelectedEpisodes() {
+      if (_selectedEpisodeIndexes.size === 0 || !selectedPodcast) return;
+      
+      const status = document.getElementById('epBulkStatus').value;
+      const statusMap = { want: 'want', progress: 'progress', done: 'done' };
+      const itemStatus = statusMap[status] || 'done';
+      const today = new Date().toISOString().split('T')[0];
+      
+      // Ensure parent podcast exists
+      let parentPodcast = data.podcasts.find(p => p.name.toLowerCase() === selectedPodcast.name.toLowerCase());
+      if (!parentPodcast) {
+        parentPodcast = {
+          id: generateId(),
+          name: selectedPodcast.name,
+          coverUrl: selectedPodcast.coverUrl,
+          artist: selectedPodcast.artist
+        };
+        data.podcasts.push(parentPodcast);
+      }
+      
+      // Collect selected episodes in their display order (newest first)
+      const sortedIndexes = [..._selectedEpisodeIndexes].sort((a, b) => a - b);
+      
+      sortedIndexes.forEach(index => {
+        const episode = _podcastEpisodesList[index];
+        const newItem = {
+          id: generateId(),
+          title: episode.title,
+          category: 'podcast',
+          status: itemStatus,
+          notes: '',
+          coverUrl: parentPodcast.coverUrl || null,
+          isbn: null,
+          episode: episode.title,
+          podcastId: parentPodcast.id,
+          podcastName: parentPodcast.name,
+          rating: null,
+          review: null,
+          dateAdded: today,
+          dateStarted: (itemStatus === 'progress' || itemStatus === 'done') ? today : null,
+          dateEnded: itemStatus === 'done' ? today : null,
+          dateCompleted: itemStatus === 'done' ? today : null,
+          dateReleased: episode.releaseDate || null
+        };
+        data.items.unshift(newItem);
+      });
+      
+      saveData();
+      updatePodcastDropdown();
+      renderItems();
+      
+      // Close dropdown and reset
+      document.getElementById('podcastEpisodeDropdown').classList.remove('visible');
+      _selectedEpisodeIndexes = new Set();
+      
+      const statusLabel = status === 'want' ? 'Want to Do' : status === 'progress' ? 'In Progress' : 'Done';
+      showToast(`${sortedIndexes.length} episode${sortedIndexes.length > 1 ? 's' : ''} added to ${statusLabel}!`, 'success', 3000);
     }
 
     // Get selected category from radio buttons
@@ -4838,7 +5316,12 @@ document.querySelectorAll('.section-header').forEach(function(header) {
       document.getElementById('coverPreview').innerHTML = '<span class="no-image">?</span>';
       document.getElementById('isbnInput').value = '';
       document.getElementById('episodeInput').value = '';
+      document.getElementById('episodeReleaseDate').value = '';
       document.getElementById('podcastSelect').value = ''; // Reset podcast dropdown
+      const browseBtn = document.getElementById('browseEpisodesBtn');
+      if (browseBtn) browseBtn.disabled = true;
+      const epDropdown = document.getElementById('podcastEpisodeDropdown');
+      if (epDropdown) epDropdown.classList.remove('visible');
       document.getElementById('isbnGroup').classList.remove('visible');
       document.getElementById('podcastGroup').classList.remove('visible');
       document.getElementById('episodeGroup').classList.remove('visible');
@@ -4957,6 +5440,7 @@ document.querySelectorAll('.section-header').forEach(function(header) {
           item.articleUrl = articleUrl;
           item.videoCategory = videoCategory;
           item.dateCompleted = status === 'done' ? (endDate || startDate) : null;
+          item.dateReleased = document.getElementById('episodeReleaseDate').value || item.dateReleased || null;
           
           // Show episode tracking
           if (category === 'show') {
@@ -4994,7 +5478,8 @@ document.querySelectorAll('.section-header').forEach(function(header) {
           dateAdded: new Date().toISOString().split('T')[0],
           dateStarted: startDate,
           dateEnded: endDate,
-          dateCompleted: status === 'done' ? (endDate || startDate) : null
+          dateCompleted: status === 'done' ? (endDate || startDate) : null,
+          dateReleased: document.getElementById('episodeReleaseDate').value || null
         };
         
         // Add show episode tracking fields
@@ -5087,6 +5572,7 @@ document.querySelectorAll('.section-header').forEach(function(header) {
       // Set podcast selection
       if (item.category === 'podcast') {
         updatePodcastDropdown();
+        document.getElementById('episodeReleaseDate').value = item.dateReleased || '';
         if (item.podcastId) {
           selectedPodcast = data.podcasts.find(p => p.id === item.podcastId);
           document.getElementById('podcastSelect').value = item.podcastId;
@@ -5445,7 +5931,8 @@ document.querySelectorAll('.section-header').forEach(function(header) {
         `;
       }
       
-      let dateDisplay = `<span>Added: ${item.dateAdded}</span>`;
+      let dateDisplay = '';
+      if (cardDisplaySettings.showDateAdded) dateDisplay += `<span>Added: ${item.dateAdded}</span>`;
       if (item.isbn) dateDisplay += `<span class="isbn">ISBN: ${escapeHtml(item.isbn)}</span>`;
       if (item.podcastName) dateDisplay += `<span class="podcast-name">${escapeHtml(item.podcastName)}</span>`;
       if (item.episode) dateDisplay += `<span class="episode">${escapeHtml(item.episode)}</span>`;
@@ -5456,8 +5943,9 @@ document.querySelectorAll('.section-header').forEach(function(header) {
       if (item.videoUrl) dateDisplay += `<span class="episode"><a href="${escapeHtml(item.videoUrl)}" target="_blank" rel="noopener noreferrer" style="color: var(--accent-blue);">▶ Watch Video</a></span>`;
       if (item.articleUrl) dateDisplay += `<span class="episode"><a href="${escapeHtml(item.articleUrl)}" target="_blank" rel="noopener noreferrer" style="color: var(--accent-blue);">📄 Read Article</a></span>`;
       if (item.videoCategory) dateDisplay += `<span class="video-cat-tag">${getVideoCategoryLabel(item.videoCategory)}</span>`;
-      if (item.dateStarted) dateDisplay += `<span class="started">Started: ${item.dateStarted}</span>`;
-      if (item.dateEnded) dateDisplay += `<span class="ended">Ended: ${item.dateEnded}</span>`;
+      if (cardDisplaySettings.showDateReleased && item.dateReleased) dateDisplay += `<span class="episode">Released: ${item.dateReleased}</span>`;
+      if (cardDisplaySettings.showDateStarted && item.dateStarted) dateDisplay += `<span class="started">Started: ${item.dateStarted}</span>`;
+      if (cardDisplaySettings.showDateFinished && item.dateEnded) dateDisplay += `<span class="ended">Ended: ${item.dateEnded}</span>`;
       
       const hasCover = item.coverUrl && item.coverUrl.trim() !== '';
       const coverHtml = hasCover ? 
@@ -5484,7 +5972,7 @@ document.querySelectorAll('.section-header').forEach(function(header) {
           </div>
           ${episodeProgressHtml}
           ${item.notes ? `<p class="item-notes">${escapeHtml(item.notes)}</p>` : ''}
-          ${item.rating !== null && item.rating !== undefined ? `
+          ${cardDisplaySettings.showRating && item.rating !== null && item.rating !== undefined ? `
             <div class="item-rating">
               ${generateStarRatingHtml(item.rating)}
             </div>
@@ -6318,24 +6806,163 @@ document.querySelectorAll('.section-header').forEach(function(header) {
       openEpisodeManager();
     }
     
+    // ========== Display Settings (must be before renderItems) ==========
+    let cardDisplaySettings = {
+      showRating: true,
+      showDateAdded: true,
+      showDateFinished: true,
+      showDateStarted: true,
+      showDateReleased: true
+    };
+
+    function loadCardDisplaySettings() {
+      const stored = localStorage.getItem('cardDisplaySettings');
+      if (stored) {
+        try {
+          cardDisplaySettings = { ...cardDisplaySettings, ...JSON.parse(stored) };
+        } catch (e) {
+          console.error('Failed to parse card display settings:', e);
+        }
+      }
+    }
+
+    function saveCardDisplaySettings() {
+      localStorage.setItem('cardDisplaySettings', JSON.stringify(cardDisplaySettings));
+    }
+
+    function openSettingsModal() {
+      loadCardDisplaySettings();
+      const bodyHtml = `
+        <div class="settings-modal">
+          <div class="setting-group">
+            <div class="setting-info">
+              <span class="setting-label">⭐ Rating</span>
+              <span class="setting-desc">Show star ratings on item cards</span>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="settingRating" ${cardDisplaySettings.showRating ? 'checked' : ''} onchange="updateCardSetting('showRating', this.checked)">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="setting-group">
+            <div class="setting-info">
+              <span class="setting-label">📅 Date Added</span>
+              <span class="setting-desc">Show when an item was added</span>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="settingDateAdded" ${cardDisplaySettings.showDateAdded ? 'checked' : ''} onchange="updateCardSetting('showDateAdded', this.checked)">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="setting-group">
+            <div class="setting-info">
+              <span class="setting-label">✅ Date Finished</span>
+              <span class="setting-desc">Show when an item was completed</span>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="settingDateFinished" ${cardDisplaySettings.showDateFinished ? 'checked' : ''} onchange="updateCardSetting('showDateFinished', this.checked)">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="setting-group">
+            <div class="setting-info">
+              <span class="setting-label">▶️ Date Started</span>
+              <span class="setting-desc">Show when an item was started</span>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="settingDateStarted" ${cardDisplaySettings.showDateStarted ? 'checked' : ''} onchange="updateCardSetting('showDateStarted', this.checked)">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="setting-group">
+            <div class="setting-info">
+              <span class="setting-label">📻 Date Released</span>
+              <span class="setting-desc">Show original release date (podcasts)</span>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="settingDateReleased" ${cardDisplaySettings.showDateReleased ? 'checked' : ''} onchange="updateCardSetting('showDateReleased', this.checked)">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+      `;
+      openModal('Display Settings', bodyHtml, '<button class="btn btn-ghost" onclick="closeModal()">Close</button>');
+    }
+
+    function updateCardSetting(key, value) {
+      cardDisplaySettings[key] = value;
+      saveCardDisplaySettings();
+      renderItems();
+    }
+
+    function toggleFilterSection() {
+      const content = document.getElementById('filterContent');
+      const toggle = document.getElementById('filterToggle');
+
+      content.classList.toggle('collapsed');
+      toggle.classList.toggle('collapsed');
+
+      const isCollapsed = content.classList.contains('collapsed');
+      localStorage.setItem('filterCollapsed', isCollapsed);
+    }
+
+    // Backfill release dates for existing podcast items missing dateReleased
+    async function backfillReleaseDates() {
+      const podcastItems = data.items.filter(i => i.category === 'podcast' && !i.dateReleased && i.episode);
+      if (podcastItems.length === 0) return;
+
+      // Group by podcast name to avoid redundant API calls
+      const byPodcast = {};
+      podcastItems.forEach(item => {
+        const key = item.podcastName || item.title;
+        if (!byPodcast[key]) byPodcast[key] = [];
+        byPodcast[key].push(item);
+      });
+
+      for (const [podcastName, items] of Object.entries(byPodcast)) {
+        try {
+          const url = `https://itunes.apple.com/search?term=${encodeURIComponent(podcastName)}&media=podcast&entity=podcastEpisode&limit=200`;
+          const response = await fetchWithProxy(url);
+          const result = await response.json();
+
+          if (!result.results) continue;
+
+          // Build a lookup: episode title (lowercased) -> releaseDate
+          const lookup = {};
+          result.results.forEach(r => {
+            if (r.trackName && r.releaseDate) {
+              lookup[r.trackName.toLowerCase()] = new Date(r.releaseDate).toLocaleDateString();
+            }
+          });
+
+          let updated = false;
+          items.forEach(item => {
+            const epTitle = (item.episode || item.title).toLowerCase();
+            if (lookup[epTitle]) {
+              item.dateReleased = lookup[epTitle];
+              updated = true;
+            }
+          });
+
+          if (updated) {
+            saveDataLocal();
+            renderItems();
+          }
+        } catch (e) {
+          console.warn('Backfill release dates failed for', podcastName, e);
+        }
+        // Small delay between API calls to avoid rate limiting
+        await new Promise(r => setTimeout(r, 300));
+      }
+    }
+
     // Initialize
     loadData();
+    loadCardDisplaySettings();
     initFirebase();
     renderItems();
-    autoSyncOnLoad(); // Non-blocking cloud sync in background
-  
-
-function toggleFilterSection() {
-  const content = document.getElementById('filterContent');
-  const toggle = document.getElementById('filterToggle');
-
-  content.classList.toggle('collapsed');
-  toggle.classList.toggle('collapsed');
-
-  // Optional: Save preference to localStorage
-  const isCollapsed = content.classList.contains('collapsed');
-  localStorage.setItem('filterCollapsed', isCollapsed);
-}
+    autoSyncOnLoad();
+    backfillReleaseDates(); // Non-blocking background fetch for missing release dates
 
 // Optional: Restore state on page load
 document.addEventListener('DOMContentLoaded', () => {
@@ -6347,6 +6974,15 @@ document.addEventListener('DOMContentLoaded', () => {
     content.classList.remove('collapsed');
     toggle.classList.remove('collapsed');
   }
+
+  // Close podcast episode dropdown when clicking outside
+  document.addEventListener('click', (e) => {
+    const dropdown = document.getElementById('podcastEpisodeDropdown');
+    const wrapper = dropdown?.closest('.podcast-episode-wrapper');
+    if (dropdown && wrapper && !wrapper.contains(e.target)) {
+      dropdown.classList.remove('visible');
+    }
+  });
 });
   </script>
 </body>
