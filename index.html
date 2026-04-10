@@ -14,6 +14,7 @@
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
   <style>
     :root {
       --bg-primary: #18181b;
@@ -42,6 +43,113 @@
       --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.6);
       --transition-fast: 150ms ease;
       --transition-base: 200ms ease;
+    }
+
+    /* ========== LIGHT MODE ========== */
+    body.light-mode {
+      --bg-primary: #f5f5f7;
+      --bg-secondary: #ffffff;
+      --bg-tertiary: #f0f0f3;
+      --bg-elevated: #eaeaee;
+      --border-subtle: #dcdce0;
+      --border-default: #b8b8bf;
+      --text-primary: #1a1a2e;
+      --text-secondary: #5a5a6e;
+      --text-tertiary: #8e8ea0;
+      --accent-green-muted: rgba(34, 197, 94, 0.12);
+      --accent-amber-muted: rgba(245, 158, 11, 0.12);
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.08);
+      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+    }
+
+    body.light-mode input[type="date"]::-webkit-calendar-picker-indicator {
+      filter: none;
+    }
+
+    body.light-mode ::-webkit-scrollbar-track {
+      background: #f0f0f3;
+    }
+
+    body.light-mode ::-webkit-scrollbar-thumb {
+      background: #b8b8bf;
+    }
+
+    body.light-mode ::-webkit-scrollbar-thumb:hover {
+      background: #8e8ea0;
+    }
+
+    body.light-mode .modal-overlay {
+      background: rgba(0, 0, 0, 0.35);
+    }
+
+    body.light-mode .item-card.dragging {
+      opacity: 0.5;
+      background: var(--bg-tertiary);
+    }
+
+    body.light-mode .header h1 {
+      background: linear-gradient(135deg, #1a1a2e 0%, #3a3a5e 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+    }
+
+    body.light-mode .empty-state {
+      border-color: var(--border-default);
+    }
+
+    /* ========== THUMBNAIL CARD BACKGROUND ========== */
+    .item-card.card-bg {
+      position: relative;
+      overflow: hidden;
+      background-color: transparent !important;
+      background-size: cover !important;
+      background-position: center center !important;
+      background-repeat: no-repeat !important;
+    }
+
+    .card-bg-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(18, 18, 22, 0.90);
+      z-index: 0;
+      border-radius: var(--radius-md);
+    }
+
+    body.light-mode .card-bg-overlay {
+      background: rgba(245, 245, 248, 0.9);
+    }
+
+    .item-card.card-bg > .item-with-cover,
+    .item-card.card-bg > .item-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .item-card.card-bg .item-cover {
+      display: none;
+    }
+
+    .item-card.card-bg .item-meta .category,
+    .item-card.card-bg .item-notes,
+    .item-card.card-bg .item-review,
+    .item-card.card-bg .item-rating {
+      text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    }
+
+    body.light-mode .item-card.card-bg .item-meta .category,
+    body.light-mode .item-card.card-bg .item-notes,
+    body.light-mode .item-card.card-bg .item-review,
+    body.light-mode .item-card.card-bg .item-rating {
+      text-shadow: 0 1px 3px rgba(255,255,255,0.5);
+    }
+
+    /* Ensure category border is visible over the background overlay */
+    .item-card.card-bg[style*="border-left"] {
+      border-left-style: solid !important;
     }
 
     * {
@@ -1424,6 +1532,222 @@
       }
     }
 
+    /* ========== AUTH SCREEN ========== */
+    .auth-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--bg-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      transition: opacity 0.3s ease;
+    }
+
+    .auth-overlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .auth-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 48px 40px;
+      max-width: 420px;
+      width: 90%;
+      text-align: center;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .auth-card .auth-logo {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 20px;
+    }
+
+    .auth-card h2 {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .auth-card p {
+      font-size: 14px;
+      color: var(--text-tertiary);
+      margin-bottom: 32px;
+      line-height: 1.5;
+    }
+
+    .btn-google {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 28px;
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text-primary);
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      font-family: inherit;
+    }
+
+    .btn-google:hover {
+      background: var(--bg-elevated);
+      border-color: var(--text-secondary);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .btn-google:active {
+      transform: translateY(0);
+    }
+
+    .btn-google:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    .btn-google .google-icon {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+    }
+
+    .auth-error {
+      margin-top: 16px;
+      font-size: 13px;
+      color: var(--accent-red);
+      display: none;
+    }
+
+    .auth-error.visible {
+      display: block;
+    }
+
+    .auth-loading {
+      margin-top: 16px;
+      font-size: 13px;
+      color: var(--text-tertiary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    /* ========== USER PROFILE IN HEADER ========== */
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .user-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--border-default);
+      cursor: pointer;
+      transition: border-color var(--transition-fast);
+    }
+
+    .user-avatar:hover {
+      border-color: var(--accent-blue);
+    }
+
+    .user-menu {
+      position: relative;
+    }
+
+    .user-dropdown {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 8px;
+      min-width: 200px;
+      box-shadow: var(--shadow-lg);
+      z-index: 100;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-4px);
+      transition: all var(--transition-fast);
+    }
+
+    .user-dropdown.visible {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .user-dropdown-header {
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border-subtle);
+      margin-bottom: 4px;
+    }
+
+    .user-dropdown-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .user-dropdown-email {
+      font-size: 12px;
+      color: var(--text-tertiary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .user-dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      border: none;
+      background: none;
+      width: 100%;
+      font-family: inherit;
+    }
+
+    .user-dropdown-item:hover {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+    }
+
+    .user-dropdown-item.danger {
+      color: var(--accent-red);
+    }
+
+    .user-dropdown-item.danger:hover {
+      background: rgba(239, 68, 68, 0.1);
+    }
+
     /* Modal */
     .modal-overlay {
       position: fixed;
@@ -2389,6 +2713,29 @@
   </style>
 </head>
 <body>
+  <!-- Auth Gate: blocks app until signed in -->
+  <div class="auth-overlay" id="authOverlay">
+    <div class="auth-card">
+      <img src="https://img.icons8.com/?size=160&id=jaGYkPVVwXqk&format=png" alt="Focus Feed Logo" class="auth-logo">
+      <h2>Focus Feed</h2>
+      <p>Sign in with Google to access your media tracker. Your data is scoped to your account and stays private.</p>
+      <button class="btn-google" id="googleSignInBtn" onclick="signInWithGoogle()">
+        <svg class="google-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>
+          <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+          <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+          <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+        </svg>
+        Sign in with Google
+      </button>
+      <div class="auth-error" id="authError"></div>
+      <div class="auth-loading" id="authLoading" style="display:none;">
+        <div class="spinner"></div>
+        Checking sign-in state...
+      </div>
+    </div>
+  </div>
+
   <!-- Header -->
   <header class="header">
     <div class="header-inner">
@@ -2402,6 +2749,19 @@
           <span class="sync-dot offline"></span>
         </span>
         <span id="syncLabel">...</span>
+      </div>
+      <!-- User Profile -->
+      <div class="user-menu" id="userMenu">
+        <img class="user-avatar" id="userAvatar" src="" alt="User" onclick="toggleUserDropdown()" style="display:none;">
+        <div class="user-dropdown" id="userDropdown">
+          <div class="user-dropdown-header">
+            <div class="user-dropdown-name" id="userName"></div>
+            <div class="user-dropdown-email" id="userEmail"></div>
+          </div>
+          <button class="user-dropdown-item danger" onclick="signOutUser()">
+            <span>🚪</span> Sign out
+          </button>
+        </div>
       </div>
     </div>
   </header>
@@ -2876,6 +3236,19 @@
       other: '📦'
     };
 
+    const CATEGORY_BORDER_COLORS = {
+      movie: '#3b82f6',
+      show: '#8b5cf6',
+      album: '#ec4899',
+      book: '#f59e0b',
+      activity: '#22c55e',
+      game: '#ef4444',
+      podcast: '#06b6d4',
+      video: '#f97316',
+      article: '#64748b',
+      other: '#a1a1aa'
+    };
+
     // State
     let data = { items: [], podcasts: [] };
     let customVideoCategories = JSON.parse(localStorage.getItem('mediaTracker_videoCategories') || '["gaming","education","fitness"]');
@@ -2896,6 +3269,135 @@
     let showSearchResults = [];
     let selectedShowIndex = -1;
 
+    // ==================== AUTHENTICATION ====================
+
+    let currentUser = null; // Firebase Auth user
+    let authReady = false;
+
+    // Initialize Firebase Auth and set up Google provider
+    function initAuth() {
+      const auth = firebase.auth();
+      const googleProvider = new firebase.auth.GoogleAuthProvider();
+
+      // Listen for auth state changes (handles page reload, session persistence)
+      auth.onAuthStateChanged((user) => {
+        if (user) {
+          // User is signed in
+          currentUser = user;
+          authReady = true;
+          console.log('[Auth] Signed in as:', user.email);
+          showApp();
+        } else {
+          // User is signed out
+          currentUser = null;
+          authReady = false;
+          console.log('[Auth] No user signed in');
+          hideApp();
+        }
+      });
+    }
+
+    // Trigger Google sign-in popup
+    async function signInWithGoogle() {
+      const btn = document.getElementById('googleSignInBtn');
+      const errEl = document.getElementById('authError');
+      const loadingEl = document.getElementById('authLoading');
+
+      btn.disabled = true;
+      errEl.classList.remove('visible');
+      loadingEl.style.display = 'flex';
+
+      try {
+        const auth = firebase.auth();
+        const googleProvider = new firebase.auth.GoogleAuthProvider();
+        await auth.signInWithPopup(googleProvider);
+        // onAuthStateChanged will handle the rest
+      } catch (err) {
+        console.error('[Auth] Sign-in error:', err);
+        if (err.code === 'auth/popup-closed-by-user') {
+          // User cancelled — not an error
+        } else if (err.code === 'auth/unauthorized-domain') {
+          errEl.textContent = 'This domain is not authorized. Add it in Firebase Console → Authentication → Settings → Authorized domains.';
+          errEl.classList.add('visible');
+        } else {
+          errEl.textContent = 'Sign-in failed: ' + err.message;
+          errEl.classList.add('visible');
+        }
+        btn.disabled = false;
+        loadingEl.style.display = 'none';
+      }
+    }
+
+    // Sign out and show login screen
+    async function signOutUser() {
+      try {
+        await firebase.auth().signOut();
+        // onAuthStateChanged will hide the app
+      } catch (err) {
+        console.error('[Auth] Sign-out error:', err);
+      }
+      // Close dropdown
+      document.getElementById('userDropdown').classList.remove('visible');
+    }
+
+    // Show the main app, hide auth overlay
+    function showApp() {
+      const overlay = document.getElementById('authOverlay');
+      overlay.classList.add('hidden');
+      setTimeout(() => { overlay.style.display = 'none'; }, 300);
+
+      // Update user profile UI
+      if (currentUser) {
+        const avatar = document.getElementById('userAvatar');
+        const nameEl = document.getElementById('userName');
+        const emailEl = document.getElementById('userEmail');
+        avatar.src = currentUser.photoURL || '';
+        avatar.style.display = 'block';
+        nameEl.textContent = currentUser.displayName || 'User';
+        emailEl.textContent = currentUser.email || '';
+      }
+
+      // Initialize the app (only runs once)
+      if (!window._appInitialized) {
+        window._appInitialized = true;
+        loadData();
+        loadCardDisplaySettings();
+        if (cardDisplaySettings.lightMode) document.body.classList.add('light-mode');
+        initFirebase();
+        renderItems();
+        autoSyncOnLoad();
+        backfillReleaseDates();
+      }
+    }
+
+    // Hide the main app, show auth overlay
+    function hideApp() {
+      const overlay = document.getElementById('authOverlay');
+      overlay.style.display = 'flex';
+      setTimeout(() => { overlay.classList.remove('hidden'); }, 10);
+
+      const btn = document.getElementById('googleSignInBtn');
+      const loadingEl = document.getElementById('authLoading');
+      btn.disabled = false;
+      loadingEl.style.display = 'none';
+
+      document.getElementById('userAvatar').style.display = 'none';
+    }
+
+    // Toggle user dropdown menu
+    function toggleUserDropdown() {
+      document.getElementById('userDropdown').classList.toggle('visible');
+    }
+
+    // Close user dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+      const menu = document.getElementById('userMenu');
+      const dropdown = document.getElementById('userDropdown');
+      if (menu && !menu.contains(e.target)) {
+        dropdown.classList.remove('visible');
+      }
+    });
+
     // ==================== CLOUD SYNC (Firestore) ====================
 
     const FIREBASE_CONFIG = {
@@ -2911,6 +3413,12 @@
     let isSyncing = false;       // Prevent overlapping syncs
     let cloudLastModified = null; // Timestamp of last cloud update
     let syncEnabled = true;      // Can be toggled off
+
+    // Get the user-scoped Firestore document path
+    function getUserDocRef() {
+      if (!currentUser) return null;
+      return db.collection('users').doc(currentUser.uid);
+    }
 
     // Initialize Firebase (non-blocking, graceful failure)
     function initFirebase() {
@@ -2953,7 +3461,7 @@
 
     // Push current data to Firestore
     async function pushToCloud() {
-      if (!db || isSyncing) return;
+      if (!db || isSyncing || !currentUser) return;
       isSyncing = true;
       const syncBtn = document.getElementById('syncBtn');
       if (syncBtn) syncBtn.classList.add('syncing');
@@ -2961,7 +3469,9 @@
 
       try {
         const payload = buildSyncPayload();
-        await db.collection('sync').doc('userData').set(payload, { merge: true });
+        const docRef = getUserDocRef();
+        if (!docRef) return;
+        await docRef.set(payload, { merge: true });
         cloudLastModified = new Date();
         updateSyncUI('online', 'Synced');
         console.log('[Sync] Pushed to cloud at', cloudLastModified.toISOString());
@@ -2978,7 +3488,9 @@
     async function pullFromCloud() {
       if (!db) return null;
       try {
-        const doc = await db.collection('sync').doc('userData').get();
+        const docRef = getUserDocRef();
+        if (!docRef) return null;
+        const doc = await docRef.get();
         if (doc.exists) {
           const cloud = doc.data();
           cloudLastModified = cloud.lastModified ? cloud.lastModified.toDate() : null;
@@ -4119,7 +4631,7 @@
 
     // Load data from localStorage
     function loadData() {
-      const stored = localStorage.getItem('mediaTracker');
+      const stored = localStorage.getItem(getStorageKey());
       if (stored) {
         try {
           const parsed = JSON.parse(stored);
@@ -4135,18 +4647,24 @@
 
     // Save data to localStorage (local-only, used by merge logic)
     function saveDataLocal() {
-      localStorage.setItem('mediaTracker', JSON.stringify(data));
+      localStorage.setItem(getStorageKey(), JSON.stringify(data));
     }
 
     // Save data to localStorage + schedule cloud sync
     function saveData() {
-      localStorage.setItem('mediaTracker', JSON.stringify(data));
+      localStorage.setItem(getStorageKey(), JSON.stringify(data));
       scheduleSync();
     }
 
     // Generate unique ID
     function generateId() {
       return `item-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    }
+
+    // Get user-scoped localStorage key
+    function getStorageKey(suffix) {
+      const uid = currentUser ? currentUser.uid : '_anonymous';
+      return `mediaTracker_${uid}${suffix ? '_' + suffix : ''}`;
     }
 
     // Update podcast dropdown
@@ -5947,9 +6465,21 @@ document.querySelectorAll('.section-header').forEach(function(header) {
       if (cardDisplaySettings.showDateStarted && item.dateStarted) dateDisplay += `<span class="started">Started: ${item.dateStarted}</span>`;
       if (cardDisplaySettings.showDateFinished && item.dateEnded) dateDisplay += `<span class="ended">Ended: ${item.dateEnded}</span>`;
       
-      const hasCover = item.coverUrl && item.coverUrl.trim() !== '';
-      const coverHtml = hasCover ? 
+      // Category display modes
+      const catDisplay = cardDisplaySettings.categoryDisplay || 'badge';
+      const catBorder = catDisplay === 'border' ? `border-left: 3px solid ${CATEGORY_BORDER_COLORS[item.category] || '#a1a1aa'};` : '';
+      const catIconHtml = catDisplay === 'badge' ? (cardDisplaySettings.showCategoryIcon !== false ? `<span class="icon">${icon}</span>` : '') : '';
+      const catBadgeHtml = catDisplay === 'badge' ? `<span class="category">${item.category}</span>` : '';
+
+      const hasCover = cardDisplaySettings.showThumbnails && item.coverUrl && item.coverUrl.trim() !== '';
+      const useBgMode = hasCover && cardDisplaySettings.thumbnailBg;
+      const coverHtml = hasCover && !useBgMode ?  
         `<div class="item-cover"><img src="${escapeHtml(item.coverUrl)}" onerror="this.style.display='none'" alt="Cover"></div>` : '';
+      const bgOverlayHtml = useBgMode ? `<div class="card-bg-overlay"></div>` : '';
+      const cardBgClass = useBgMode ? ' card-bg' : '';
+      // Encode URL for safe use in CSS url() — escape single quotes, parens
+      const safeBgUrl = useBgMode ? item.coverUrl.replace(/'/g, "%27").replace(/\(/g, "%28").replace(/\)/g, "%29") : '';
+      const bgImageStyle = useBgMode ? `background-image: url('${safeBgUrl}');` : '';
       
       // For podcasts, show podcast name and episode in title if available
       let displayTitle = item.title;
@@ -5963,21 +6493,21 @@ document.querySelectorAll('.section-header').forEach(function(header) {
       const contentHtml = `
         <div class="item-content">
           <div class="item-title-row">
-            <span class="icon">${icon}</span>
+            ${catIconHtml}
             ${item.videoUrl ? `<h3><a href="${escapeHtml(item.videoUrl)}" target="_blank" rel="noopener noreferrer" style="color: var(--text-primary); text-decoration: none;">${escapeHtml(displayTitle)}</a></h3>` : item.articleUrl ? `<h3><a href="${escapeHtml(item.articleUrl)}" target="_blank" rel="noopener noreferrer" style="color: var(--text-primary); text-decoration: none;">${escapeHtml(displayTitle)}</a></h3>` : `<h3>${escapeHtml(displayTitle)}</h3>`}
           </div>
           <div class="item-meta">
-            <span class="category">${item.category}</span>
+            ${catBadgeHtml}
             ${dateDisplay}
           </div>
           ${episodeProgressHtml}
-          ${item.notes ? `<p class="item-notes">${escapeHtml(item.notes)}</p>` : ''}
+          ${cardDisplaySettings.showNotes && item.notes ? `<p class="item-notes">${escapeHtml(item.notes)}</p>` : ''}
           ${cardDisplaySettings.showRating && item.rating !== null && item.rating !== undefined ? `
             <div class="item-rating">
               ${generateStarRatingHtml(item.rating)}
             </div>
           ` : ''}
-          ${item.review ? `
+          ${cardDisplaySettings.showReview && item.review ? `
             <div class="item-review">
               <div class="item-review-label">Review</div>
               ${escapeHtml(item.review)}
@@ -5991,10 +6521,10 @@ document.querySelectorAll('.section-header').forEach(function(header) {
         </div>
       `;
       
-      if (hasCover) {
-        return `<div class="item-card" draggable="true" data-item-id="${item.id}"><div class="item-with-cover">${coverHtml}${contentHtml}</div></div>`;
+      if (hasCover && !useBgMode) {
+        return `<div class="item-card" draggable="true" data-item-id="${item.id}" style="${catBorder}"><div class="item-with-cover">${coverHtml}${contentHtml}</div></div>`;
       }
-      return `<div class="item-card" draggable="true" data-item-id="${item.id}">${contentHtml}</div>`;
+      return `<div class="item-card${cardBgClass}" draggable="true" data-item-id="${item.id}" style="${catBorder}${bgImageStyle}">${bgOverlayHtml}${contentHtml}</div>`;
     }
 
     // Escape HTML
@@ -6812,7 +7342,13 @@ document.querySelectorAll('.section-header').forEach(function(header) {
       showDateAdded: true,
       showDateFinished: true,
       showDateStarted: true,
-      showDateReleased: true
+      showDateReleased: true,
+      showNotes: true,
+      showReview: true,
+      showThumbnails: true,
+      thumbnailBg: false,
+      categoryDisplay: 'badge',
+      lightMode: false
     };
 
     function loadCardDisplaySettings() {
@@ -6834,6 +7370,21 @@ document.querySelectorAll('.section-header').forEach(function(header) {
       loadCardDisplaySettings();
       const bodyHtml = `
         <div class="settings-modal">
+          <div class="setting-group">
+            <div class="setting-info">
+              <span class="setting-label">☀️ Light Mode</span>
+              <span class="setting-desc">Switch between dark and light theme</span>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" ${cardDisplaySettings.lightMode ? 'checked' : ''} onchange="updateCardSetting('lightMode', this.checked)">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="setting-group" style="border-top: 1px solid var(--border-subtle); margin-top: 4px; padding-top: 16px;">
+            <div class="setting-info">
+              <span class="setting-label" style="font-size:12px; text-transform:uppercase; letter-spacing:0.05em; color:var(--text-tertiary);">Card Display</span>
+            </div>
+          </div>
           <div class="setting-group">
             <div class="setting-info">
               <span class="setting-label">⭐ Rating</span>
@@ -6884,6 +7435,63 @@ document.querySelectorAll('.section-header').forEach(function(header) {
               <span class="toggle-slider"></span>
             </label>
           </div>
+          <div class="setting-group">
+            <div class="setting-info">
+              <span class="setting-label">📝 Notes</span>
+              <span class="setting-desc">Show notes on item cards</span>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="settingNotes" ${cardDisplaySettings.showNotes ? 'checked' : ''} onchange="updateCardSetting('showNotes', this.checked)">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="setting-group">
+            <div class="setting-info">
+              <span class="setting-label">💬 Review</span>
+              <span class="setting-desc">Show review text on item cards</span>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="settingReview" ${cardDisplaySettings.showReview ? 'checked' : ''} onchange="updateCardSetting('showReview', this.checked)">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="setting-group">
+            <div class="setting-info">
+              <span class="setting-label">🖼️ Thumbnails</span>
+              <span class="setting-desc">Show cover images on item cards</span>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="settingThumbnails" ${cardDisplaySettings.showThumbnails ? 'checked' : ''} onchange="updateCardSetting('showThumbnails', this.checked)">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="setting-group">
+            <div class="setting-info">
+              <span class="setting-label">🎨 Card Background</span>
+              <span class="setting-desc">Use thumbnail as card background (requires thumbnails)</span>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" ${cardDisplaySettings.thumbnailBg ? 'checked' : ''} onchange="updateCardSetting('thumbnailBg', this.checked)">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="setting-group" style="flex-direction: column; align-items: stretch; gap: 8px;">
+            <div class="setting-info">
+              <span class="setting-label">🏷️ Category Display</span>
+              <span class="setting-desc">How categories appear on item cards</span>
+            </div>
+            <div style="display: flex; gap: 6px;">
+              <label style="flex:1; display:flex; align-items:center; justify-content:center; gap:4px; padding:8px 0; background: var(--bg-tertiary); border:1px solid ${cardDisplaySettings.categoryDisplay === 'badge' ? 'var(--accent-blue)' : 'var(--border-subtle)'}; border-radius:var(--radius-sm); cursor:pointer; font-size:12px; color:${cardDisplaySettings.categoryDisplay === 'badge' ? 'var(--accent-blue)' : 'var(--text-secondary)'};">
+                <input type="radio" name="catDisplay" value="badge" ${cardDisplaySettings.categoryDisplay === 'badge' ? 'checked' : ''} onchange="updateCardSetting('categoryDisplay','badge')" style="display:none;"> Badge
+              </label>
+              <label style="flex:1; display:flex; align-items:center; justify-content:center; gap:4px; padding:8px 0; background: var(--bg-tertiary); border:1px solid ${cardDisplaySettings.categoryDisplay === 'border' ? 'var(--accent-blue)' : 'var(--border-subtle)'}; border-radius:var(--radius-sm); cursor:pointer; font-size:12px; color:${cardDisplaySettings.categoryDisplay === 'border' ? 'var(--accent-blue)' : 'var(--text-secondary)'};">
+                <input type="radio" name="catDisplay" value="border" ${cardDisplaySettings.categoryDisplay === 'border' ? 'checked' : ''} onchange="updateCardSetting('categoryDisplay','border')" style="display:none;"> Border
+              </label>
+              <label style="flex:1; display:flex; align-items:center; justify-content:center; gap:4px; padding:8px 0; background: var(--bg-tertiary); border:1px solid ${cardDisplaySettings.categoryDisplay === 'hidden' ? 'var(--accent-blue)' : 'var(--border-subtle)'}; border-radius:var(--radius-sm); cursor:pointer; font-size:12px; color:${cardDisplaySettings.categoryDisplay === 'hidden' ? 'var(--accent-blue)' : 'var(--text-secondary)'};">
+                <input type="radio" name="catDisplay" value="hidden" ${cardDisplaySettings.categoryDisplay === 'hidden' ? 'checked' : ''} onchange="updateCardSetting('categoryDisplay','hidden')" style="display:none;"> Hidden
+              </label>
+            </div>
+          </div>
         </div>
       `;
       openModal('Display Settings', bodyHtml, '<button class="btn btn-ghost" onclick="closeModal()">Close</button>');
@@ -6892,6 +7500,9 @@ document.querySelectorAll('.section-header').forEach(function(header) {
     function updateCardSetting(key, value) {
       cardDisplaySettings[key] = value;
       saveCardDisplaySettings();
+      if (key === 'lightMode') {
+        document.body.classList.toggle('light-mode', value);
+      }
       renderItems();
     }
 
@@ -6956,13 +7567,10 @@ document.querySelectorAll('.section-header').forEach(function(header) {
       }
     }
 
-    // Initialize
-    loadData();
+    // Initialize — Auth gate first, then app
     loadCardDisplaySettings();
-    initFirebase();
-    renderItems();
-    autoSyncOnLoad();
-    backfillReleaseDates(); // Non-blocking background fetch for missing release dates
+    if (cardDisplaySettings.lightMode) document.body.classList.add('light-mode');
+    initAuth(); // This starts the auth listener; showApp() will init the rest on sign-in
 
 // Optional: Restore state on page load
 document.addEventListener('DOMContentLoaded', () => {
