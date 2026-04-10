@@ -3420,10 +3420,16 @@
       return db.collection('users').doc(currentUser.uid);
     }
 
-    // Initialize Firebase (non-blocking, graceful failure)
+    // Initialize Firebase App early (needed by Auth)
+    try {
+      firebase.initializeApp(FIREBASE_CONFIG);
+    } catch (err) {
+      console.warn('Firebase init failed:', err.message);
+    }
+
+    // Initialize Firestore (called after sign-in)
     function initFirebase() {
       try {
-        firebase.initializeApp(FIREBASE_CONFIG);
         db = firebase.firestore();
         // Listen for online/offline
         updateSyncUI('syncing', 'Connecting...');
@@ -7567,10 +7573,10 @@ document.querySelectorAll('.section-header').forEach(function(header) {
       }
     }
 
-    // Initialize — Auth gate first, then app
+    // Initialize — Firebase App first, then Auth gate, then app after sign-in
     loadCardDisplaySettings();
     if (cardDisplaySettings.lightMode) document.body.classList.add('light-mode');
-    initAuth(); // This starts the auth listener; showApp() will init the rest on sign-in
+    initAuth(); // Firebase App is already initialized above; showApp() will init Firestore on sign-in
 
 // Optional: Restore state on page load
 document.addEventListener('DOMContentLoaded', () => {
